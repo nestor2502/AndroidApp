@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Loginactivity</string>
+    <string name="button">Username</string>
+    <string name="button2">Password</string>
+</resources>
