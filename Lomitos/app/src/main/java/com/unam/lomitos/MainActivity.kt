@@ -13,7 +13,6 @@ import android.widget.ProgressBar
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import org.jetbrains.anko.alert
-import retrofit2.Response
 import android.util.Log
 import android.widget.Button
 import retrofit2.Call
@@ -24,7 +23,17 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
 
+import com.android.volley.toolbox.Volley
+import org.json.JSONArray
+import org.json.JSONObject
+
+
+
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        val LOG_TAG = "Nestor"
+    }
 
     lateinit var service: ApiService
     private lateinit var editText:EditText
@@ -32,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var button: Button
     val TAG_LOGS = "nestor"
+    private var resultado = "vacio"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,12 +52,6 @@ class MainActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
         button = findViewById(R.id.button)
 
-        val retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl("http://lomitos-api.tk/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        service = retrofit.create<ApiService>(ApiService::class.java)
 
 
     }
@@ -68,10 +72,13 @@ class MainActivity : AppCompatActivity() {
             progressBar.visibility= View.VISIBLE
             doAsync {
                 button.isClickable = false
-                Thread.sleep(5000)
+                //getKey()
+                Thread.sleep(1000)
                 uiThread {
                     progressBar.visibility=View.GONE
                     button.isClickable = true
+                    //showMessage(resultado)
+
                 }
             }
 
@@ -93,22 +100,14 @@ class MainActivity : AppCompatActivity() {
 
         val username:String = editText.text.toString() //giving the username of text view
         val password:String = editText2.text.toString() //giving the password of text view
+        val queue = Volley.newRequestQueue(this)
+        val url = "http://lomitos-api.tk/login.php?"
+        var parameter_a = "username="+username
+        var parameter_b = "&password="+password
+        val request = url+parameter_a+parameter_b
 
-        var post: User? = null
 
-        service.getKey(username, password).enqueue(object: Callback<User>{
-            override fun onResponse(call: Call<User>?, response: Response<User>?) {
-                //post = response?.body()
-                //Log.i(TAG_LOGS, Gson().toJson(post))
-                //print(post.toString())
-                action2()
-            }
 
-            override fun onFailure(call: Call<User>, t: Throwable) {
-                //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-                t?.printStackTrace()
-            }
-        })
 
     }
 
@@ -122,11 +121,6 @@ class MainActivity : AppCompatActivity() {
             yesButton { }
         }.show()
     }
-    /**
-    private fun hideKeyboard(){
-        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(viewRoot.windowToken, 0)
-    }*/
 
     private fun showErrorDialogEmptyField() {
         alert("No puedes dejar campos vacios") {
@@ -134,6 +128,11 @@ class MainActivity : AppCompatActivity() {
         }.show()
     }
 
+    private fun showMessage(mensaje:String) {
+        alert(mensaje) {
+            yesButton { }
+        }.show()
+    }
 
 
 
