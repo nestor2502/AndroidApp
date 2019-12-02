@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0e214a"
+    android:background="#e0eaeb"
     tools:context=".signup">
 
     <Button
@@ -35,7 +35,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:hint="Username"
-        android:backgroundTint="@color/colorPrimary"/>
+        android:backgroundTint="#8c030e"
+        android:textColor="#8c030e"
+        android:textColorHint="#bf414c"
+        />
 
     <EditText
         android:id="@+id/editText4"
@@ -50,6 +53,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText3"
-        android:backgroundTint="@color/colorPrimary"/>
+        android:backgroundTint="#8c030e"
+        android:textColor="#8c030e"
+        android:textColorHint="#bf414c"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

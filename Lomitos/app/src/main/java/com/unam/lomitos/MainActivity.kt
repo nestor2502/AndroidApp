@@ -23,9 +23,24 @@ import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
 
-import com.android.volley.toolbox.Volley
+
 import org.json.JSONArray
 import org.json.JSONObject
+import retrofit2.Response
+import java.io.BufferedInputStream
+import java.net.HttpURLConnection
+import java.net.URL
+
+//
+import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.android.extension.responseJson
+
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
+import org.json.JSONException
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.URLEncoder
 
 
 
@@ -53,6 +68,9 @@ class MainActivity : AppCompatActivity() {
         button = findViewById(R.id.button)
 
 
+        //sendGetRequest()
+
+
 
     }
 
@@ -61,28 +79,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun login(view:View){//accion del boton login
-
-        //loginUser()
         val username:String = editText.text.toString() //giving the username of text view
         val password:String = editText2.text.toString() //giving the password of text view
-
+        var llamada = ""
         if(!TextUtils.isEmpty(username)&&!TextUtils.isEmpty(password)){
-            //progressBar.visibility= View.VISIBLE
-            //getKey()
+            try{
             progressBar.visibility= View.VISIBLE
             doAsync {
                 button.isClickable = false
-                //getKey()
-                Thread.sleep(1000)
+                Log.i(TAG_LOGS, "Comienza la llamada")
+                getKey(username,password)
+                //Thread.sleep(1000)
                 uiThread {
                     progressBar.visibility=View.GONE
                     button.isClickable = true
+                    Log.i(TAG_LOGS, "termina la llamada")
                     //showMessage(resultado)
 
                 }
             }
 
-        }
+        } catch (e: Exception){
+                Log.i(TAG_LOGS, "algo salio mal en los hilos")
+            }}
+
         else{
             showErrorDialogEmptyField()
         }
@@ -96,20 +116,32 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this, connected::class.java))
     }
 
-    fun getKey(){
+    private fun getKey(username:String, password: String){
+        val url = "http://lomitos-api.tk/login.php?username=$username&password=$password"
+        url.httpGet()
+            .responseString { request, response, result ->
+                when (result) {
+                    is Result.Failure -> {
+                        Log.i(TAG_LOGS, "algo salio mal en la llamada")
+                    }
+                    is Result.Success -> {
+                        val data = result.get()
+                        Log.i(TAG_LOGS, data)
+                    }
+                }
+            }
+    }
 
-        val username:String = editText.text.toString() //giving the username of text view
-        val password:String = editText2.text.toString() //giving the password of text view
-        val queue = Volley.newRequestQueue(this)
-        val url = "http://lomitos-api.tk/login.php?"
-        var parameter_a = "username="+username
-        var parameter_b = "&password="+password
-        val request = url+parameter_a+parameter_b
-
-
-
+    private fun ConvertArray(){
 
     }
+
+    private fun showErrorDialogEmptyField() {
+        alert("No puedes dejar campos vacios") {
+            yesButton { }
+        }.show()
+    }
+
 
     private fun showErrorDialog() {
         alert("Ha ocurrido un error, inténtelo de nuevo.") {
@@ -122,17 +154,6 @@ class MainActivity : AppCompatActivity() {
         }.show()
     }
 
-    private fun showErrorDialogEmptyField() {
-        alert("No puedes dejar campos vacios") {
-            yesButton { }
-        }.show()
-    }
-
-    private fun showMessage(mensaje:String) {
-        alert(mensaje) {
-            yesButton { }
-        }.show()
-    }
 
 
 
