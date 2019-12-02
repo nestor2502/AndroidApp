@@ -25,6 +25,7 @@ class signup : AppCompatActivity() {
     private lateinit var button: Button
     val TAG_LOGS = "nestor"
     private var stat = "no hay nada"
+    private var key = ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +56,10 @@ class signup : AppCompatActivity() {
 
 
     private fun action(){
-        startActivity(Intent(this, connected::class.java))
+        //startActivity(Intent(this, connected::class.java))
+        val intent = Intent(this, connected::class.java)
+        intent.putExtra("key", key)
+        startActivity(intent)
     }
 
     private fun showErrorDialogEmptyField() {
@@ -81,6 +85,29 @@ class signup : AppCompatActivity() {
         }.show()
     }
 
+    fun doLogin(username:String, password:String){
+        try {
+
+        }
+        finally{
+            val URL = "http://lomitos-api.tk/login.php?username=$username&password=$password"
+            URL.httpGet().responseObject(User.Deserializer()){request, response, result ->
+                when (result) {
+                    is Result.Success -> {
+                        var estado = result.get()
+                        key = estado.key
+                        Log.i(TAG_LOGS, key)
+                        Log.i(TAG_LOGS, "todo se realizo correctamente en AsynkTask funcion externa ")
+                    }
+                    is Result.Failure -> {
+                        Log.i(TAG_LOGS, "algo salio mal en la llamada en AsynkTask funcion externa")
+                    }
+                }
+            }
+            Thread.sleep(1000)
+            Log.i(TAG_LOGS, "Valor que se retorna: ${key} en AsynkTask funcionexterna")}
+
+    }
 
 
     inner class Api : AsyncTask<String, Void, Int>() {
@@ -105,6 +132,7 @@ class signup : AppCompatActivity() {
                         is Result.Success -> {
                             var estado = result.get()
                             stat = estado.status
+                            doLogin(username, password)
                             Log.i(TAG_LOGS, stat)
                             Log.i(TAG_LOGS, "todo se realizo correctamente en AsynkTask ")
                         }
@@ -121,10 +149,13 @@ class signup : AppCompatActivity() {
 
 
         override fun onPostExecute(result: Int?) {
-            Log.i(TAG_LOGS, "Resultado que devuelve la funcion getAnswer: ${stat} en AsynkTask")
+            Log.i(TAG_LOGS, "Resultado que devuelve la funcion getAnswer: ${stat} en AsynkTask post execute")
             if (stat.equals("ok")) {
                 Log.i(TAG_LOGS, "Conexion existosa")
-                showStatus(stat)
+
+                Thread.sleep(1000)
+                Log.i(TAG_LOGS, "Valor de la llave despues de obtenerla de LOGIN: ${key}")
+                showStatus(key)
                 action()
 
             }

@@ -67,7 +67,10 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent(this, signup::class.java))
     }
     private fun action2(){
-        startActivity(Intent(this, connected::class.java))
+        //startActivity(Intent(this, connected::class.java))
+        val intent = Intent(this, connected::class.java)
+        intent.putExtra("key", key)
+        startActivity(intent)
     }
 
     private fun showKey(key: String) {
@@ -121,7 +124,7 @@ class MainActivity : AppCompatActivity() {
                     is Result.Success -> {
                         var estado = result.get()
                         stat = estado.status
-
+                        if(stat.equals("ok"))
                         key = estado.key
                         Log.i(TAG_LOGS, stat)
                         Log.i(TAG_LOGS, key)
