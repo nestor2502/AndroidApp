@@ -21,10 +21,14 @@ import com.android.volley.toolbox.NetworkImageView
 import org.json.JSONArray
 import org.json.JSONObject
 import android.content.DialogInterface
+import android.graphics.Color
 import androidx.core.app.ComponentActivity.ExtraData
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import android.text.InputType
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import java.security.AccessController.getContext
 
 
 class feed : AppCompatActivity() {
@@ -57,12 +61,21 @@ class feed : AppCompatActivity() {
             })
 
             holder.comment?.setOnClickListener(View.OnClickListener {
-                Toast.makeText(context, "lo que sea",Toast.LENGTH_SHORT).show()
-
-                fun onTouch(v:View,event:MotionEvent):Boolean {
-                    displayAlert();
-                    return false;
+                val builder = AlertDialog.Builder(context)
+                val input = EditText(context);
+                builder.setTitle("Comentar")
+                val viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.activity_feed, (ViewGroup) getView(), false);
+                val input = (EditText) viewInflated.findViewById(R.id.input);
+                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                builder.setView(viewInflated)
+                builder.setPositiveButton("YES"){dialog, which ->
+                    Toast.makeText(context,"Ok, we change the app background.",Toast.LENGTH_SHORT).show()
                 }
+                builder.setNeutralButton("Cancel"){_,_ ->
+                    Toast.makeText(context,"You cancelled the dialog.",Toast.LENGTH_SHORT).show()
+                }
+                val dialog: AlertDialog = builder.create()
+                dialog.show()
             })
 
             holder.more?.setOnClickListener(View.OnClickListener {
@@ -78,15 +91,6 @@ class feed : AppCompatActivity() {
 
         override fun getItemCount(): Int {
             return posts.length()
-        }
-
-        fun displayAlert() {
-            AlertDialog.Builder(this).setMessage("Hi , I am Alert Dialog")
-                .setTitle("My Alert")
-                .setCancelable(true)
-                .setNeutralButton(android.R.string.ok,
-                    DialogInterface.OnClickListener { dialog, whichButton -> finish() })
-                .show()
         }
 
         class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
