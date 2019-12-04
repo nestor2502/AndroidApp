@@ -32,17 +32,18 @@ class MainActivity : AppCompatActivity() {
 
     fun login(view:View){//accion del boton login
         //loginUser()
-        val username:String = editText.text.toString() //giving the username of text view
-        val password:String = editText2.text.toString() //giving the password of text view
-        conn(username, password)
-        print("Hola")
+        //val username:String = editText.text.toString() //giving the username of text view
+        //val password:String = editText2.text.toString() //giving the password of text view
+        //conn(username, password)
+        //print("Hola")
+        action2()
     }
 
     private fun action(){
         startActivity(Intent(this, signup::class.java))
     }
     private fun action2(){
-        startActivity(Intent(this, connected::class.java))
+        startActivity(Intent(this, Comments::class.java))
     }
 
     fun loginUser(){
