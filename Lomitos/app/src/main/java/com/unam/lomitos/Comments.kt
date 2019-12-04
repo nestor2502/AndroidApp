@@ -39,7 +39,7 @@ class Comments : AppCompatActivity() {
         val key = "3e8e656cc5ad2a43d30e2040c3182239db66243311df5c7ae456f90f824d07dc"
 
         //val id = intent.getStringExtra("id")
-        val id = "1"
+        val id = "6"
 
         val recycler:RecyclerView = findViewById(R.id.recyclerViewComments)
 
@@ -54,7 +54,7 @@ class Comments : AppCompatActivity() {
                 recycler.adapter = CommentsAdapter(reponse.getJSONArray("comentarios"))
             },
             com.android.volley.Response.ErrorListener {
-                Toast.makeText(this, "No funcionaaaa", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "ERROR Connection", Toast.LENGTH_SHORT).show()
             })
 
         cola.add(request)
