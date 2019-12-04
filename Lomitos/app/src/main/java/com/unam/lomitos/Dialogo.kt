@@ -16,7 +16,6 @@ class Dialogo(context: Context, interfaz: Comentario, id:String) {
     init {
         val dialog = Dialog(context)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setCancelable(false)
         dialog.window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
         dialog.setContentView(R.layout.add_comment)
         val comentario = dialog.findViewById(R.id.comentario) as EditText

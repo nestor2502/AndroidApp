@@ -9,11 +9,10 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.DefaultRetryPolicy
 import com.android.volley.Request
 import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.NetworkImageView
+import com.android.volley.toolbox.StringRequest
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -47,18 +46,21 @@ class AdaptadorPost(var posts: JSONArray, val context: Context, val key:String):
     }
 
     override fun comentar(comentario: String, id:String) {
-        val url = "http://lomitos-api.tk/comment.php?userkey=%s&%s".format(key,id)
-        val params = HashMap<String,String>()
-        params["comment"] = comentario
-        val jsonObject = JSONObject(params as Map<*, *>)
-        val request = JsonObjectRequest(
-            Request.Method.POST,url,jsonObject,
+        val url = "http://lomitos-api.tk/comment.php?userkey=%s&dog_id=%s".format(key,id)
+        VolleyService.initialize(context)
+        val postRequest = object : StringRequest(Request.Method.POST, url,
             Response.Listener { response ->
-            }, Response.ErrorListener{
-                Toast.makeText(context, "Error al comentar", Toast.LENGTH_SHORT).show()
-            })
-        request.retryPolicy = DefaultRetryPolicy(DefaultRetryPolicy.DEFAULT_TIMEOUT_MS, 0, 1f)
-        VolleyService.requestQueue.add(request)
+            },
+            Response.ErrorListener {
+            }
+        ) {
+            override fun getParams(): Map<String, String> {
+                val params = HashMap<String, String>()
+                params["comment"] = comentario
+                return params
+            }
+        }
+        VolleyService.requestQueue.add(postRequest)
     }
 
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
