@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/bar"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:background="#8c030e"
+        android:elevation="10dp"
+        android:minHeight="?attr/actionBarSize"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:titleTextColor="@android:color/white"
+        app:title="@string/Comenta"
+        >
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <EditText
+        android:id="@+id/comentario"
+        android:layout_width="wrap_content"
+        android:layout_height="53dp"
+        android:layout_below="@+id/toolbar"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="500dp"
+        android:hint="@string/Comentario"
+        android:padding="16dp" />
+
+    <Button
+        android:id="@+id/aceptar"
+        android:layout_width="120dp"
+
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="426dp"
+        android:background="@drawable/button_rounded"
+        android:text="ACEPTAR" />
+
+    <Button
+        android:id="@+id/cancelar"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="268dp"
+        android:layout_marginBottom="426dp"
+        android:background="@drawable/button_rounded"
+        android:text="CANCELAR" />
+
+</RelativeLayout>

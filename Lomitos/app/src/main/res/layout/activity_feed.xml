@@ -9,20 +9,6 @@
     android:background="#e0eaeb"
     tools:context="com.unam.lomitos.feed">
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Autocomplete
-            android:id="@+id/input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/hint_password"
-            android:imeOptions="actionDone"
-            android:inputType="textPassword" />
-
-    </android.support.design.widget.TextInputLayout>
-
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:minHeight="?attr/actionBarSize"
