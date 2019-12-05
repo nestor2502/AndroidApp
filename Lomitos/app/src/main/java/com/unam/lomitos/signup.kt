@@ -70,15 +70,9 @@ class signup : AppCompatActivity() {
     }
 
     private fun action(key: String){
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, feed::class.java)
         intent.putExtra("key", key)
         startActivity(intent)
-    }
-
-    private fun showKey(key: String) {
-        alert(key) {
-            yesButton { }
-        }.show()
     }
 
     private fun showErrorDialogEmptyField() {

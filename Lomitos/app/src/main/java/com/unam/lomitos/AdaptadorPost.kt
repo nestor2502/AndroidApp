@@ -21,46 +21,53 @@ import com.android.volley.toolbox.StringRequest
 import org.json.JSONArray
 import org.json.JSONObject
 
-class AdaptadorPost(var posts: JSONArray, val context: Context, val key:String): RecyclerView.Adapter<AdaptadorPost.ViewHolder>(), Dialogo.Comentario {
-    //val onItemClickListener: AdapterView.OnItemClickListener? = null
+class AdaptadorPost(val posts_json: JSONArray, val context: Context, val key:String): RecyclerView.Adapter<AdaptadorPost.ViewHolder>(), Dialogo.Comentario {
+
+    private val posts = ArrayList<Post>()
+    init {
+        for (i in 0..9) {
+            val post = posts_json.getJSONObject(i)
+            posts.add(Post(post.getString("Id"),post.getString("Nombre"),
+                post.getString("Imagen"),post.getString("Likes"),post.getString("Like")))
+        }
+    }
 
     override fun onBindViewHolder(holder:AdaptadorPost.ViewHolder, position: Int) {
-        holder.bind_Items(post=posts.getJSONObject(position),key = key)
-
+        if (position == posts.size-1)
+            add_post(position)
+        holder.bind_Items(post = posts[position], key = key)
         holder.paw?.setOnClickListener(View.OnClickListener {
-            holder.like(key)
-            holder.refresh_likes(key)
-            holder.refresh_paw(key)
+            holder.like(posts[position])
         })
 
         holder.comment?.setOnClickListener(View.OnClickListener {
-            val id = holder.view.findViewById(R.id.id_dog) as TextView
-            Dialogo(context,this,id = id.text.toString())
+            Dialogo(context,this,id = posts[position].id)
         })
 
         holder.more?.setOnClickListener(View.OnClickListener {
             val intent = Intent(context, Comments::class.java)
-            intent.putExtra("id", holder.view.findViewById<TextView>(R.id.id_dog).text.toString())
+            intent.putExtra("id", posts[position].id)
             intent.putExtra("key", key)
             startActivity(context,intent, Bundle.EMPTY)
         })
+        holder.bind_Items(post = posts[position], key = key)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.post, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(view,key)
     }
 
     override fun getItemCount(): Int {
-        return posts.length()
+        return posts.size
     }
 
     override fun comentar(comentario: String, id:String) {
         val url = "http://lomitos-api.tk/comment.php?userkey=%s&dog_id=%s".format(key,id)
         VolleyService.initialize(context)
         val postRequest = object : StringRequest(Request.Method.POST, url,
-            Response.Listener { response ->
+            Response.Listener {
             },
             Response.ErrorListener {
             }
@@ -74,14 +81,32 @@ class AdaptadorPost(var posts: JSONArray, val context: Context, val key:String):
         VolleyService.requestQueue.add(postRequest)
     }
 
-    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    fun add_post(position: Int) {
+        if ((position+10) < posts_json.length()) {
+            for (i in (position+1)..(position+10)) {
+                val post = posts_json.getJSONObject(i)
+                posts.add(Post(post.getString("Id"),post.getString("Nombre"),
+                    post.getString("Imagen"),post.getString("Likes"),post.getString("Like")))
+            }
+        } else {
+            for (i in (position+1)..posts_json.length()-1) {
+                val post = posts_json.getJSONObject(i)
+                posts.add(Post(post.getString("Id"),post.getString("Nombre"),
+                    post.getString("Imagen"),post.getString("Likes"),post.getString("Like")))
+            }
+        }
+    }
+
+    class ViewHolder(val view: View, val key: String) : RecyclerView.ViewHolder(view) {
 
         var paw: ImageButton? = null
         var comment: ImageButton? = null
         var more: ImageButton? = null
+        private var like:Boolean = true
 
         @SuppressLint("WrongViewCast")
-        fun bind_Items(post: JSONObject, key: String) {
+        fun bind_Items(post: Post, key: String) {
+            like = post.like == "true"
             val nombre = view.findViewById(R.id.nombre) as TextView
             val likes = view.findViewById(R.id.likes) as TextView
             val imagen = view.findViewById(R.id.foto) as NetworkImageView
@@ -89,54 +114,33 @@ class AdaptadorPost(var posts: JSONArray, val context: Context, val key:String):
             paw = view.findViewById(R.id.paw) as ImageButton
             comment = view.findViewById(R.id.comentar) as ImageButton
             more = view.findViewById(R.id.detalles) as ImageButton
-            nombre.text = post.getString("Nombre")
-            likes.text = post.getString("Likes")
-            id.text = post.getString("Id")
-            imagen.setImageUrl(post.getString("Imagen"),VolleyService.imageLoader)
-            refresh_likes(key)
-            refresh_paw(key)
+            nombre.text = post.nombre
+            likes.text = post.likes
+            id.text = post.id
+            imagen.setImageUrl(post.imagen,VolleyService.imageLoader)
         }
 
-        fun like(key: String) {
-            val id = view.findViewById<TextView>(R.id.id_dog).text.toString()
+        fun like(post: Post) {
+            val likes = itemView.findViewById<TextView>(R.id.likes)
+            val id = post.id
             val url = "http://lomitos-api.tk/like.php?userkey=%s&dog_id=%s".format(key,id)
             val request = StringRequest(url,
                 Response.Listener<String> {
                 },
                 Response.ErrorListener {
+                    return@ErrorListener
                 })
             VolleyService.requestQueue.add(request)
-        }
-
-        fun refresh_paw(key: String) {
-            val url = "http://lomitos-api.tk/iflike.php?key=%s&id=%s"
-            val paw = itemView.findViewById<ImageView>(R.id.paw)
-            val request = JsonObjectRequest(Request.Method.GET, url, null,
-                Response.Listener<JSONObject> { response ->
-                    if (response["status"].toString() == "true")
-                        paw.setImageResource(R.drawable.paw_like)
-                    else
-                        paw.setImageResource(R.drawable.paw)
-                },
-                Response.ErrorListener {
-                    Toast.makeText(itemView.context, "That didn't work!", Toast.LENGTH_SHORT).show()
-                })
-            VolleyService.requestQueue.add(request)
-        }
-
-        fun refresh_likes(key: String) {
-            val id = itemView.findViewById<TextView>(R.id.id_dog).text.toString()
-            val url = "http://lomitos-api.tk/perro.php?key=%s&id=%s".format(key,id)
-            val likes = itemView.findViewById<TextView>(R.id.likes)
-            var paws:String? = null
-            val request = JsonObjectRequest(Request.Method.GET, url, null,
-                Response.Listener<JSONObject> { response ->
-                    likes.text = response["likes"].toString()
-                },
-                Response.ErrorListener {
-                    Toast.makeText(itemView.context, "That didn't work!", Toast.LENGTH_SHORT).show()
-                })
-            VolleyService.requestQueue.add(request)
+            if (like) {
+                likes.text = (post.likes.toInt() - 1).toString()
+                post.likes = (post.likes.toInt() - 1).toString()
+                post.like = "false"
+            } else {
+                likes.text = (post.likes.toInt() + 1).toString()
+                post.likes = (post.likes.toInt() + 1).toString()
+                post.like = "true"
+            }
+            like = !like
         }
     }
 }
