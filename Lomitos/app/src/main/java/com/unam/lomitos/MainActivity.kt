@@ -5,11 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
-import android.widget.EditText
-import android.widget.ProgressBar
 import org.jetbrains.anko.alert
 import android.util.Log
-import android.widget.Button
+import android.widget.*
+import androidx.core.content.ContextCompat
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
@@ -23,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var editText2:EditText
     private lateinit var progressBar: ProgressBar
     private lateinit var button: Button
-    val service = VolleyService
+    private val service = VolleyService
 
 
 
@@ -83,12 +82,12 @@ class MainActivity : AppCompatActivity() {
     private fun action2(key:String){
         val intent = Intent(this, feed::class.java)
         intent.putExtra("key", key)
-        startActivity(intent)
+        ContextCompat.startActivity(this, intent, Bundle.EMPTY)
     }
 
 
     private fun showErrorDialog() {
-        alert("usuario o contraseña incorrecto") {
+        alert("Usuario o contraseña incorrectos") {
             yesButton { }
         }.show()
     }
@@ -99,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         }.show()
     }
     private fun showErrorConnect() {
-        alert("We can't connect") {
+        alert("No se pudo establecer conexión") {
             yesButton { }
         }.show()
     }

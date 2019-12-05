@@ -2,15 +2,19 @@ package com.unam.lomitos
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.NetworkImageView
 import com.android.volley.toolbox.StringRequest
 import org.json.JSONArray
@@ -23,7 +27,9 @@ class AdaptadorPost(var posts: JSONArray, val context: Context, val key:String):
         holder.bind_Items(post=posts.getJSONObject(position))
 
         holder.paw?.setOnClickListener(View.OnClickListener {
-            Toast.makeText(context,holder.view.findViewById<TextView>(R.id.id_dog).text.toString(), Toast.LENGTH_SHORT).show()
+            holder.like(key)
+            holder.refresh_likes(key)
+            holder.refresh_paw()
         })
 
         holder.comment?.setOnClickListener(View.OnClickListener {
@@ -32,6 +38,10 @@ class AdaptadorPost(var posts: JSONArray, val context: Context, val key:String):
         })
 
         holder.more?.setOnClickListener(View.OnClickListener {
+            val intent = Intent(context, Comments::class.java)
+            intent.putExtra("id", holder.view.findViewById<TextView>(R.id.id_dog).text.toString())
+            intent.putExtra("key", key)
+            startActivity(context,intent, Bundle.EMPTY)
         })
     }
 
@@ -82,6 +92,36 @@ class AdaptadorPost(var posts: JSONArray, val context: Context, val key:String):
             likes.text = post.getString("Likes")
             id.text = post.getString("Id")
             imagen.setImageUrl(post.getString("Imagen"),VolleyService.imageLoader)
+        }
+
+        fun like(key: String) {
+            val id = view.findViewById<TextView>(R.id.id_dog).text.toString()
+            val url = "http://lomitos-api.tk/like.php?userkey=%s&dog_id=%s".format(key,id)
+            val request = StringRequest(url,
+                Response.Listener<String> {
+                },
+                Response.ErrorListener {
+                })
+            VolleyService.requestQueue.add(request)
+        }
+
+        fun refresh_paw() {
+
+        }
+
+        fun refresh_likes(key: String) {
+            val id = itemView.findViewById<TextView>(R.id.id_dog).text.toString()
+            val url = "http://lomitos-api.tk/perro.php?key=%s&id=%s".format(key,id)
+            val likes = itemView.findViewById<TextView>(R.id.likes)
+            var paws:String? = null
+            val request = JsonObjectRequest(Request.Method.GET, url, null,
+                Response.Listener<JSONObject> { response ->
+                    likes.text = response["likes"].toString()
+                },
+                Response.ErrorListener {
+                    Toast.makeText(itemView.context, "That didn't work!", Toast.LENGTH_SHORT).show()
+                })
+            VolleyService.requestQueue.add(request)
         }
     }
 }

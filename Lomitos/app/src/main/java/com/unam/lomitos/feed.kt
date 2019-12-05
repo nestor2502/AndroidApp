@@ -23,9 +23,9 @@ import org.json.JSONObject
 
 class feed : AppCompatActivity() {
 
-    val url = "http://lomitos-api.tk/feed.php?key=3e8e656cc5ad2a43d30e2040c3182239db66243311df5c7ae456f90f824d07dc"
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val url = "http://lomitos-api.tk/feed.php?key=%s".format(intent.getStringExtra("key"))
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_feed)
         VolleyService.initialize(this)
@@ -33,7 +33,8 @@ class feed : AppCompatActivity() {
         recycler_view.layoutManager = LinearLayoutManager(this)
         val request = JsonObjectRequest(Request.Method.GET, url, null,
             Response.Listener<JSONObject> { response ->
-                recycler_view.adapter = AdaptadorPost(response.getJSONArray("posts"), this, "3e8e656cc5ad2a43d30e2040c3182239db66243311df5c7ae456f90f824d07dc")
+                recycler_view.adapter = AdaptadorPost(response.getJSONArray("posts"),
+                this, intent.getStringExtra("key"))
             },
             Response.ErrorListener {
                 Toast.makeText(this, "That didn't work!", Toast.LENGTH_SHORT).show()

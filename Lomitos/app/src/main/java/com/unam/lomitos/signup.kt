@@ -70,7 +70,7 @@ class signup : AppCompatActivity() {
     }
 
     private fun action(key: String){
-        val intent = Intent(this, connected::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("key", key)
         startActivity(intent)
     }
@@ -87,13 +87,13 @@ class signup : AppCompatActivity() {
         }.show()
     }
     private fun showErrorConnect() {
-        alert("We can't connect") {
+        alert("No se pudo establecer conexión") {
             yesButton { }
         }.show()
     }
 
     private fun showErrorDialog() {
-        alert("this username has been used") {
+        alert("El nombre de usuario ya existe") {
             yesButton { }
         }.show()
     }
